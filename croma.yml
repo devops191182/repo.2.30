@@ -1,0 +1,30 @@
+- name: Create Ubuntu Pod in Kubernetes
+  hosts: web
+  gather_facts: no
+  collections:
+    - kubernetes.core
+
+- name: Install Kubernetes Python library
+  hosts: all
+  vars:
+    ansible_python_interpreter: /usr/bin/python3.10
+  tasks:
+    - name: Install kubernetes module
+      pip:
+        name: kubernetes
+  tasks:
+    - name: Create Ubuntu Pod
+      kubernetes.core.k8s:
+        kubeconfig: ~/.kube/config
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Pod
+          metadata:
+            name: ubuntu-pod1
+            namespace: default
+          spec:
+            containers:
+              - name: ubuntu
+                image: ubuntu:latest
+                command: ["/bin/bash", "-c", "sleep infinity"]
