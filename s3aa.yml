@@ -1,19 +1,24 @@
 ---
-- name: Create an S3 bucket in AWS
+- name: Create an S3 bucket with versioning enabled
   hosts: localhost
   connection: local
   gather_facts: no
 
   vars:
-    bucket_name: "ansible-jenkins-251"
-    aws_region: "us-east-1"
+    s3_bucket_name: "my-versioned-jenkins"  # Change this to a unique name
+    s3_region: "us-east-1"
 
   tasks:
-    - name: Ensure the S3 bucket exists
+    - name: Create S3 bucket
       amazon.aws.s3_bucket:
-        bucket: "{{ bucket_name }}"
-        mode: create
-        region: "{{ aws_region }}"
-        permission: private
-      register: s3_result
+        name: "{{ s3_bucket_name }}"
+        state: present
+        region: "{{ s3_region }}"
+      register: s3_create_result
 
+    - name: Enable versioning on the S3 bucket
+      amazon.aws.s3_bucket:
+        name: "{{ s3_bucket_name }}"
+        versioning: yes
+        state: present
+        region: "{{ s3_region }}"
