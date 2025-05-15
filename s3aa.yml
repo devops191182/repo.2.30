@@ -10,7 +10,7 @@
 
   tasks:
     - name: Ensure the S3 bucket exists
-      community.aws.aws_s3:
+      amazon.aws.s3_bucket:
         bucket: "{{ bucket_name }}"
         mode: create
         region: "{{ aws_region }}"
