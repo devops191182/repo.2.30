@@ -1,0 +1,19 @@
+---
+- name: Create an S3 bucket in AWS
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  vars:
+    bucket_name: "ansible-jenkins-251"
+    aws_region: "us-east-1"
+
+  tasks:
+    - name: Ensure the S3 bucket exists
+      community.aws.aws_s3:
+        bucket: "{{ bucket_name }}"
+        mode: create
+        region: "{{ aws_region }}"
+        permission: private
+      register: s3_result
+
