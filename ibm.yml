@@ -1,0 +1,38 @@
+---
+- name: Launch EC2 instance
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    region: ap-south-1
+    key_name: kuldeep-wfh
+    instance_type: t2.micro
+    ami_id: ami-06b6e5225d1db5f46  # Amazon Linux 2 AMI (update for your region)
+    sg_name: mysql-demo
+    vpc_id: vpc-0e12883779ee7506e  # Replace with your VPC ID
+
+  tasks:
+    - name: Create a security group
+      amazon.aws.ec2_group:
+        name: "{{ sg_name }}"
+        description: "Security group for Ansible EC2"
+        vpc_id: "{{ vpc_id }}"
+        region: "{{ region }}"
+        rules:
+          - proto: tcp
+            ports:
+              - 22
+            cidr_ip: 0.0.0.0/0
+        state: present
+
+    - name: Launch EC2 instance
+      amazon.aws.ec2_instance:
+        name: ansible-demo-instance
+        key_name: "{{ key_name }}"
+        instance_type: "{{ instance_type }}"
+        image_id: "{{ ami_id }}"
+        region: "{{ region }}"
+        security_groups: ["{{ sg_name }}"]
+        wait: true
+        count: 1
